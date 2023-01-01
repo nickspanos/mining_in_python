@@ -1,0 +1,54 @@
+import hashlib
+
+# Define a function to compute the hash of a block.
+def compute_hash(block):
+  # Encode the block data as a bytes object.
+  block_bytes = str(block).encode()
+  # Compute the SHA-256 hash of the block data.
+  return hashlib.sha256(block_bytes).hexdigest()
+
+# Define a function to mine a new block.
+def mine_block(last_block, data):
+  # Start with a random nonce value.
+  nonce = 0
+  # Compute the hash of the last block.
+  last_hash = compute_hash(last_block)
+  # Keep trying new nonce values until we find one that works.
+  while True:
+    # Compute the hash of the new block candidate.
+    block_hash = compute_hash({
+      'last_hash': last_hash,
+      'data': data,
+      'nonce': nonce
+    })
+    # Check if the block hash meets the difficulty requirement.
+    if block_hash[:4] == '0000':
+      # If it does, we've found a valid block.
+      return {
+        'last_hash': last_hash,
+        'data': data,
+        'nonce': nonce,
+        'hash': block_hash
+      }
+    # If it doesn't, try the next nonce value.
+    nonce += 1
+
+# Define the starting block of the chain.
+genesis_block = {
+  'last_hash': '',
+  'data': 'Genesis block',
+  'nonce': 0,
+  'hash': compute_hash({
+    'last_hash': '',
+    'data': 'Genesis block',
+    'nonce': 0
+  })
+}
+
+# Define the blockchain.
+blockchain = [genesis_block]
+
+# Mine some new blocks and add them to the chain.
+for i in range(1, 10):
+  new_block = mine_block(blockchain[-1], f'Block {i}')
+  blockchain
